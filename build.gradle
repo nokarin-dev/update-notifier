@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+group = 'org.nokarin'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.formdev:flatlaf:3.6"
+    implementation "com.google.code.gson:gson:2.11.0"
+    implementation "org.json:json:20231013"
+}
+
+shadowJar {
+    archiveBaseName.set("update-notifier")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    manifest {
+        attributes(
+                'Specification-Title'         : project.name,
+                'Specification-Vendor'        : 'Strivo Development',
+                'Specification-Version'       : version,
+                'Implementation-Title'        : project.name,
+                'Implementation-Version'      : version,
+                'Implementation-Vendor'       : 'Strivo Development',
+                'Implementation-Timestamp'    : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Timestamp'                   : System.currentTimeMillis(),
+                'Built-On-Java'               : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                "Main-Class"                  : "org.nokarin.UpdateNotifier"
+        )
+    }
+}
+
+jar.enabled = false
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact shadowJar
+            groupId = project.group
+            artifactId = 'update-notifier'
+            version = project.version
+        }
+    }
+
+    repositories {
+        maven {
+            name = "github"
+            url = uri("https://maven.pkg.github.com/nokarin-dev/update-notifier")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+}
