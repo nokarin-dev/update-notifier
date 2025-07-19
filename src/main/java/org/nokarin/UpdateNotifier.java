@@ -88,6 +88,7 @@ public class UpdateNotifier {
 
     public static void main(String[] args) throws Exception {
         log("Starting NekoUI Update Notifier...");
+
         String version = args.length > 0 ? args[0] : null;
         String loader = args.length > 1 ? args[1] : null;
         String mcVersion = args.length > 2 ? args[2] : null;
@@ -113,6 +114,10 @@ public class UpdateNotifier {
         boolean autoUpdateEnabled = config.get("autoUpdateEnabled").getAsBoolean();
         log("Auto-update enabled: " + autoUpdateEnabled);
 
+        // Check UpdateNotifier Version
+        log("Checking update for UpdateNotifier");
+        checkAndUpdate();
+
         // Launch update window UI
         SwingUtilities.invokeLater(() -> {
             try {
@@ -128,8 +133,10 @@ public class UpdateNotifier {
     }
 
     // Auto-update window
-    private static void createAutoUpdateWindow(String version, String loader, String mcVersion, String modsPathArg) throws Exception {
+    private static void createAutoUpdateWindow(String version, String loader, String mcVersion, String modsPathArg)
+            throws Exception {
         log("Creating auto update window...");
+
         JFrame frame = buildBaseWindow();
         JPanel shadowPanel = (JPanel) frame.getContentPane();
 
@@ -139,7 +146,9 @@ public class UpdateNotifier {
         title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel message = new JLabel("<html><div style='text-align: center;'>Please wait while the update is downloaded.</div></html>", SwingConstants.CENTER);
+        JLabel message = new JLabel(
+                "<html><div style='text-align: center;'>Please wait while the update is downloaded.</div></html>",
+                SwingConstants.CENTER);
         message.setFont(new Font("SansSerif", Font.PLAIN, 14));
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -154,7 +163,8 @@ public class UpdateNotifier {
         // Load config and checkbox
         File configFile = new File("updater-config.json");
         JsonObject config = JsonParser.parseReader(new FileReader(configFile)).getAsJsonObject();
-        JCheckBox autoUpdateToggle = new JCheckBox("Enable Auto-Update", config.get("autoUpdateEnabled").getAsBoolean());
+        JCheckBox autoUpdateToggle = new JCheckBox("Enable Auto-Update",
+                config.get("autoUpdateEnabled").getAsBoolean());
 
         // Log details button
         JButton detailsButton = new JButton("Show Details");
@@ -215,7 +225,8 @@ public class UpdateNotifier {
     }
 
     // Standard update window
-    private static void createWindow(String version, String loader, String mcVersion, String modsPathArg) throws Exception {
+    private static void createWindow(String version, String loader, String mcVersion, String modsPathArg)
+            throws Exception {
         log("Creating standard update window...");
         JFrame frame = buildBaseWindow();
         JPanel shadowPanel = (JPanel) frame.getContentPane();
@@ -225,7 +236,8 @@ public class UpdateNotifier {
         title.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel message = new JLabel("<html><div style='text-align: center;'><div><b>NekoUI " + version + "</b></div><div>is available for download.</div></div></html>", SwingConstants.CENTER);
+        JLabel message = new JLabel("<html><div style='text-align: center;'><div><b>NekoUI " + version
+                + "</b></div><div>is available for download.</div></div></html>", SwingConstants.CENTER);
         message.setFont(new Font("SansSerif", Font.PLAIN, 14));
         message.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -247,7 +259,8 @@ public class UpdateNotifier {
         // Load config and checkbox
         File configFile = new File("updater-config.json");
         JsonObject config = JsonParser.parseReader(new FileReader(configFile)).getAsJsonObject();
-        JCheckBox autoUpdateToggle = new JCheckBox("Enable Auto-Update", config.get("autoUpdateEnabled").getAsBoolean());
+        JCheckBox autoUpdateToggle = new JCheckBox("Enable Auto-Update",
+                config.get("autoUpdateEnabled").getAsBoolean());
 
         // Log details button
         JButton detailsButton = new JButton("Show Details");
@@ -276,11 +289,12 @@ public class UpdateNotifier {
         shadowPanel.add(content, BorderLayout.CENTER);
 
         // Allow window dragging
-        final Point[] mouseDownCompCoords = {null};
+        final Point[] mouseDownCompCoords = { null };
         shadowPanel.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 mouseDownCompCoords[0] = e.getPoint();
             }
+
             public void mouseReleased(MouseEvent e) {
                 mouseDownCompCoords[0] = null;
             }
@@ -326,7 +340,8 @@ public class UpdateNotifier {
             try {
                 Desktop.getDesktop().browse(new URI("https://github.strivo.xyz/nekoui-download/blob/main/Changes.md"));
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Failed to open link:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to open link:\n" + ex.getMessage(), "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 log("Failed to open changelog: " + ex.getMessage());
             }
         });
@@ -368,16 +383,19 @@ public class UpdateNotifier {
                 SwingUtilities.invokeLater(() -> frame.setOpacity(opacity));
                 try {
                     Thread.sleep(15);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
         }).start();
     }
 
     // Perform actual update logic: fetch, delete old, download new
-    private static void updateNekoUI(String version, String loader, String mcVersion, String modsPathArg, JLabel title, JLabel message, JPanel content, JFrame frame) {
+    private static void updateNekoUI(String version, String loader, String mcVersion, String modsPathArg, JLabel title,
+            JLabel message, JPanel content, JFrame frame) {
         log("Starting update NekoUI process...");
         title.setText("Updating NekoUI...");
-        message.setText("<html><div style='text-align: center;'>Please wait while the update is downloaded.</div></html>");
+        message.setText(
+                "<html><div style='text-align: center;'>Please wait while the update is downloaded.</div></html>");
 
         JProgressBar progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
@@ -388,7 +406,8 @@ public class UpdateNotifier {
         new Thread(() -> {
             try {
                 // Query modrinth API for latest version
-                String modrinthJson = new String(new URI("https://api.modrinth.com/v2/project/EZpbRipP/version").toURL().openStream().readAllBytes());
+                String modrinthJson = new String(new URI("https://api.modrinth.com/v2/project/EZpbRipP/version").toURL()
+                        .openStream().readAllBytes());
                 JSONArray versions = new JSONArray(modrinthJson);
                 String normalizedVersion = version.replaceFirst("^v", "");
                 String[] result = findDownloadUrl(versions, loader, mcVersion, normalizedVersion);
@@ -414,11 +433,14 @@ public class UpdateNotifier {
 
                 SwingUtilities.invokeLater(() -> {
                     log("Update NekoUI Complete!");
-                    message.setText("<html><div style='text-align: center;'>Download complete.<br>Restart Minecraft to apply update.</div></html>");
+                    message.setText(
+                            "<html><div style='text-align: center;'>Download complete.<br>Restart Minecraft to apply update.</div></html>");
                 });
             } catch (Exception ex) {
                 log("Failed to update NekoUI: " + ex.getMessage());
-                SwingUtilities.invokeLater(() -> message.setText("<html><div style='text-align: center; color:red;'>Failed: " + ex.getMessage() + "</div></html>"));
+                SwingUtilities
+                        .invokeLater(() -> message.setText("<html><div style='text-align: center; color:red;'>Failed: "
+                                + ex.getMessage() + "</div></html>"));
             }
         }).start();
     }
@@ -427,7 +449,8 @@ public class UpdateNotifier {
     private static File resolveModsDirectory() {
         log("Resolving mods directory...");
         try {
-            File jarPath = new File(UpdateNotifier.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+            File jarPath = new File(UpdateNotifier.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                    .getParentFile();
             File instanceMods = new File(jarPath, "mods");
             if (instanceMods.exists() && instanceMods.isDirectory()) {
                 log("Using instance mods directory: " + instanceMods.getAbsolutePath());
@@ -442,7 +465,8 @@ public class UpdateNotifier {
     }
 
     // Download a file and update progress bar in UI
-    private static void downloadFileWithProgress(String fileURL, String savePath, JProgressBar progressBar) throws Exception {
+    private static void downloadFileWithProgress(String fileURL, String savePath, JProgressBar progressBar)
+            throws Exception {
         log("Starting download from: " + fileURL);
         log("Saving to: " + savePath);
         try {
@@ -452,7 +476,7 @@ public class UpdateNotifier {
             log("File size: " + fileSize + " bytes");
 
             try (BufferedInputStream input = new BufferedInputStream(connection.getInputStream());
-                 FileOutputStream output = new FileOutputStream(savePath)) {
+                    FileOutputStream output = new FileOutputStream(savePath)) {
 
                 byte[] dataBuffer = new byte[1024];
                 int bytesRead;
@@ -476,14 +500,18 @@ public class UpdateNotifier {
         }
     }
 
-    // Find the download URL and filename from Modrinth JSON based on loader/game version
-    private static String[] findDownloadUrl(JSONArray versions, String currentLoader, String gameVersion, String targetVersion) {
-        log("Searching for compatible file with loader=" + currentLoader + ", gameVersion=" + gameVersion + ", targetVersion=" + targetVersion);
+    // Find the download URL and filename from Modrinth JSON based on loader/game
+    // version
+    private static String[] findDownloadUrl(JSONArray versions, String currentLoader, String gameVersion,
+            String targetVersion) {
+        log("Searching for compatible file with loader=" + currentLoader + ", gameVersion=" + gameVersion
+                + ", targetVersion=" + targetVersion);
         for (int i = 0; i < versions.length(); i++) {
             JSONObject version = versions.getJSONObject(i);
             String versionName = version.optString("version_number", "");
             log("Checking version entry " + i + ": " + versionName);
-            if (!versionName.contains(targetVersion)) continue;
+            if (!versionName.contains(targetVersion))
+                continue;
 
             JSONArray gameVersions = version.getJSONArray("game_versions");
             JSONArray loaders = version.getJSONArray("loaders");
@@ -514,12 +542,69 @@ public class UpdateNotifier {
                     return new String[] { url, filename };
                 } else {
                     log("No files in matching version entry.");
-                    }
+                }
             }
             log("Checking version entry " + i);
         }
         log("No compatible file found.");
         return null;
+    }
+
+    // Checking Update for UpdateNotifier
+    private static void checkAndUpdate() {
+        try {
+            String api = "https://api.github.com/repos/nokarin-dev/update-notifier/releases/latest";
+            HttpURLConnection connection = (HttpURLConnection) new URI(api).toURL().openConnection();
+
+            connection.setRequestProperty("Accept", "application/vnd.github+json");
+            connection.setRequestProperty("User-Agent", "UpdateNotifier");
+
+            InputStream input = connection.getInputStream();
+            String json = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+
+            JSONObject release = new JSONObject(json);
+            String latestVersion = release.getString("tag_name");
+            JSONArray assets = release.getJSONArray("assets");
+            String downloadUrl = null;
+            String filename = null;
+
+            for (int i = 0; i < assets.length(); i++) {
+                JSONObject asset = assets.getJSONObject(i);
+                if (asset.getString("name").startsWith("UpdateNotifier") &&
+                        asset.getString("name").endsWith(".jar")) {
+                    downloadUrl = asset.getString("browser_download_url");
+                    filename = asset.getString("name");
+                    break;
+                }
+            }
+            if (downloadUrl == null)
+                return;
+
+            File currentJar = new File(
+                    UpdateNotifier.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            String currentVersion = getCurrentVersion(currentJar.getName());
+
+            if (!latestVersion.equals(currentVersion)) {
+                log("UpdateNotifier is outdated. Updating to " + latestVersion + "...");
+
+                File newJar = new File(currentJar.getParentFile(), filename);
+                downloadFileWithProgress(downloadUrl, newJar.getAbsolutePath(), new JProgressBar());
+
+                log("Launching latest UpdateNotifier");
+                Runtime.getRuntime().exec("java -jar \"" + newJar.getAbsolutePath() + "\"");
+                System.exit(0);
+            } else {
+                log("UpdateNotifier is up-to date");
+            }
+        } catch (Exception e) {
+            log("Failed to check available versions for UpdateNotifier: " + e.getMessage());
+        }
+    }
+
+    private static String getCurrentVersion(String jarName) {
+        int start = jarName.indexOf("-v");
+        int end = jarName.lastIndexOf(".jar");
+        return (start != -1 && end != -1) ? jarName.substring(start + 1, end) : "Unknown";
     }
 
     private static void log(String text) {

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.nokarin'
-version = '1.1'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
@@ -18,9 +18,8 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName.set("update-notifier")
+    archiveBaseName.set("UpdateNotifier")
     archiveClassifier.set("")
-    archiveVersion.set("")
     manifest {
         attributes(
                 'Specification-Title'         : project.name,
@@ -44,7 +43,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifact shadowJar
             groupId = project.group
-            artifactId = 'update-notifier'
+            artifactId = 'UpdateNotifier'
             version = project.version
         }
     }
@@ -52,7 +51,7 @@ publishing {
     repositories {
         maven {
             name = "github"
-            url = uri("https://maven.pkg.github.com/nokarin-dev/update-notifier")
+            url = uri("https://maven.pkg.github.com/nokarin-dev/UpdateNotifier")
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
